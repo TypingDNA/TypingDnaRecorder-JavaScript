@@ -61,6 +61,9 @@ function TypingDNA(maxHistoryLength) {
     TypingDNA.prototype.getLength = function(args) {
       return TypingDNA.getLength.apply(this, arguments);
     }
+    TypingDNA.prototype.isMobile = function(args) {
+      return TypingDNA.isMobile.apply(this, arguments);
+    }
     TypingDNA.prototype.maxHistoryLength = TypingDNA.maxHistoryLength;
     TypingDNA.prototype.defaultHistoryLength = TypingDNA.defaultHistoryLength;
     TypingDNA.prototype.maxSeekTime = TypingDNA.maxSeekTime;
