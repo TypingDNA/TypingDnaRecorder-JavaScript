@@ -1,11 +1,11 @@
 /**
- * TypingDNA - Typing Biometrics JavaScript API v1.2
- * http://typingdna.com/scripts/typingdna.js
- * Use your own copy. (hotlinks not recommended)
+ * TypingDNA - Typing Biometrics JavaScript API v2.0
+ * http://api.typingdna.com/scripts/typingdna.js
+ * http://typingdna.com/scripts/typingdna.js (alternative)
  *
- * @version 1.2
+ * @version 2.0
  * @author Raul Popa
- * @copyright Typingdna.com
+ * @copyright SC TypingDNA SRL, http://typingdna.com
  * @license http://www.apache.org/licenses/LICENSE-2.0
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
@@ -58,6 +58,9 @@ function TypingDNA(maxHistoryLength) {
     TypingDNA.prototype.getQuality = function(args) {
       return TypingDNA.getQuality.apply(this, arguments);
     }
+    TypingDNA.prototype.getLength = function(args) {
+      return TypingDNA.getLength.apply(this, arguments);
+    }
     TypingDNA.prototype.maxHistoryLength = TypingDNA.maxHistoryLength;
     TypingDNA.prototype.defaultHistoryLength = TypingDNA.defaultHistoryLength;
     TypingDNA.prototype.maxSeekTime = TypingDNA.maxSeekTime;
@@ -68,8 +71,7 @@ function TypingDNA(maxHistoryLength) {
     TypingDNA.maxSeekTime = 1500;
     TypingDNA.maxPressTime = 300;
     TypingDNA.defaultHistoryLength = 500;
-    // 44 chars
-    TypingDNA.chars = [97, 98, 99, 100, 101, 102, 103, 104, 105, 106, 107, 108, 109, 110, 111, 112, 113, 114, 115, 116, 117, 118, 119, 120, 121, 122, 32, 39, 44, 46, 59, 63, 45, 47, 48, 49, 50, 51, 52, 53, 54, 55, 56, 57];
+    TypingDNA.keyCodes = [65,66,67,68,69,70,71,72,73,74,75,76,77,78,79,80,81,82,83,84,85,86,87,88,89,90,32,222,188,190,186,187,189,191,48,49,50,51,52,53,54,55,56,57];
     TypingDNA.pt1 = TypingDNA.ut1 = (new Date).getTime();
     TypingDNA.wfk = [];
     TypingDNA.sti = [];
@@ -77,37 +79,35 @@ function TypingDNA(maxHistoryLength) {
     TypingDNA.rkc = [];
     TypingDNA.lastDownKey;
     TypingDNA.prevKeyCode = 0;
-    TypingDNA.zl = 0.000000000001;
+    TypingDNA.zl = 0.0000001;
+
     TypingDNA.keydown = function(e) {
-      TypingDNA.lastDownKey = e.which;
-    }
-    TypingDNA.keypress = function(e) {
       var t0 = TypingDNA.pt1;
-      TypingDNA.pt1 = (new Date).getTime();
-      var rkco = e.which;
-      var seekTotal = TypingDNA.pt1 - t0;
-      var startTime = TypingDNA.pt1;
-      var downKey = TypingDNA.lastDownKey;
-      TypingDNA.wfk[downKey] = 1;
-      TypingDNA.skt[downKey] = seekTotal;
-      TypingDNA.sti[downKey] = startTime;
-      TypingDNA.rkc[downKey] = rkco;
+      if (!e.shiftKey || TypingDNA.isMobile()) {
+        TypingDNA.pt1 = (new Date).getTime();
+        var keyCode = e.keyCode;
+        var seekTotal = TypingDNA.pt1 - t0;
+        var startTime = TypingDNA.pt1;
+        TypingDNA.wfk[keyCode] = 1;
+        TypingDNA.skt[keyCode] = seekTotal;
+        TypingDNA.sti[keyCode] = startTime;
+      }
     }
     TypingDNA.keyup = function(e) {
       var ut = (new Date).getTime();
-      var upKey = e.which;
-      if (TypingDNA.wfk[upKey] == 1) {
-        var keyCode = TypingDNA.rkc[upKey];
-        var pressTime = ut - TypingDNA.sti[upKey];
-        var seekTime = TypingDNA.skt[upKey];
-        var arr = [keyCode, seekTime, pressTime, TypingDNA.prevKeyCode, ut];
-        TypingDNA.history.add(arr);
-        TypingDNA.prevKeyCode = keyCode;
-        TypingDNA.wfk[upKey] = 0;
+      if (!e.shiftKey || TypingDNA.isMobile()) {
+        var keyCode = e.keyCode;
+        if (TypingDNA.wfk[keyCode] == 1) {
+          var pressTime = ut - TypingDNA.sti[keyCode];
+          var seekTime = TypingDNA.skt[keyCode];
+          var arr = [keyCode, seekTime, pressTime, TypingDNA.prevKeyCode, ut];
+          TypingDNA.history.add(arr);
+          TypingDNA.prevKeyCode = keyCode;
+        }
       }
+      TypingDNA.wfk[keyCode] = 0;
     }
     TypingDNA.element.addEventListener("keydown", TypingDNA.keydown);
-    TypingDNA.element.addEventListener("keypress", TypingDNA.keypress);
     TypingDNA.element.addEventListener("keyup", TypingDNA.keyup);
 
     /**
@@ -170,10 +170,10 @@ function TypingDNA(maxHistoryLength) {
       var pressHistSD = Math.round(TypingDNA.math.sd(histPrtF));
       var seekHistSD = Math.round(TypingDNA.math.sd(histSktF));
       var charMeanTime = seekHistMean + pressHistMean;
-      var pressRatio = TypingDNA.math.rd((pressHistMean + zl) / (charMeanTime + zl), 3);
-      var seekToPressRatio = TypingDNA.math.rd((1 - pressRatio)/pressRatio, 3);
-      var pressSDToPressRatio = TypingDNA.math.rd((pressHistSD + zl) / (pressHistMean + zl), 3);
-      var seekSDToPressRatio = TypingDNA.math.rd((seekHistSD + zl) / (pressHistMean + zl), 3);
+      var pressRatio = TypingDNA.math.rd((pressHistMean + zl) / (charMeanTime + zl), 4);
+      var seekToPressRatio = TypingDNA.math.rd((1 - pressRatio)/pressRatio, 4);
+      var pressSDToPressRatio = TypingDNA.math.rd((pressHistSD + zl) / (pressHistMean + zl), 4);
+      var seekSDToPressRatio = TypingDNA.math.rd((seekHistSD + zl) / (pressHistMean + zl), 4);
       var cpm = Math.round(6E4 / (charMeanTime + zl));
       for (var i in obj.arr) {
         var rev = obj.arr[i][1].length;
@@ -187,34 +187,34 @@ function TypingDNA(maxHistoryLength) {
           case 0:
             break;
           case 1:
-            var seekMean = TypingDNA.math.rd((obj.arr[i][0][0] + zl) / (seekHistMean + zl), 3);
+            var seekMean = TypingDNA.math.rd((obj.arr[i][0][0] + zl) / (seekHistMean + zl), 4);
             break;
           default:
             var arr = TypingDNA.math.fo(obj.arr[i][0]);
-            seekMean = TypingDNA.math.rd((TypingDNA.math.avg(arr) + zl) / (seekHistMean + zl), 3);
-            seekSD = TypingDNA.math.rd((TypingDNA.math.sd(arr) + zl) / (seekHistSD + zl), 3);
+            seekMean = TypingDNA.math.rd((TypingDNA.math.avg(arr) + zl) / (seekHistMean + zl), 4);
+            seekSD = TypingDNA.math.rd((TypingDNA.math.sd(arr) + zl) / (seekHistSD + zl), 4);
         }
         switch (obj.arr[i][1].length) {
           case 0:
             break;
           case 1:
-            var pressMean = TypingDNA.math.rd((obj.arr[i][1][0] + zl) / (pressHistMean + zl), 3);
+            var pressMean = TypingDNA.math.rd((obj.arr[i][1][0] + zl) / (pressHistMean + zl), 4);
             break;
           default:
             var arr = TypingDNA.math.fo(obj.arr[i][1]);
-            pressMean = TypingDNA.math.rd((TypingDNA.math.avg(arr) + zl) / (pressHistMean + zl), 3);
-            pressSD = TypingDNA.math.rd((TypingDNA.math.sd(arr) + zl) / (pressHistSD + zl), 3);
+            pressMean = TypingDNA.math.rd((TypingDNA.math.avg(arr) + zl) / (pressHistMean + zl), 4);
+            pressSD = TypingDNA.math.rd((TypingDNA.math.sd(arr) + zl) / (pressHistSD + zl), 4);
         }
         switch (obj.arr[i][2].length) {
           case 0:
             break;
           case 1:
-            var postMean = TypingDNA.math.rd((obj.arr[i][2][0] + zl) / (seekHistMean + zl), 3);
+            var postMean = TypingDNA.math.rd((obj.arr[i][2][0] + zl) / (seekHistMean + zl), 4);
             break;
           default:
             var arr = TypingDNA.math.fo(obj.arr[i][2]);
-            postMean = TypingDNA.math.rd((TypingDNA.math.avg(arr) + zl) / (seekHistMean + zl), 3);
-            postSD = TypingDNA.math.rd((TypingDNA.math.sd(arr) + zl) / (seekHistSD + zl), 3);
+            postMean = TypingDNA.math.rd((TypingDNA.math.avg(arr) + zl) / (seekHistMean + zl), 4);
+            postSD = TypingDNA.math.rd((TypingDNA.math.sd(arr) + zl) / (seekHistSD + zl), 4);
         }
         delete obj.arr[i][2];
         delete obj.arr[i][1];
@@ -241,7 +241,7 @@ function TypingDNA(maxHistoryLength) {
       TypingDNA.apu(arr, seekHistSD);
       for (var c = 0; c <= 6; c++) {
         for (var i = 0; i < 44; i++) {
-          var keyCode = TypingDNA.chars[i];
+          var keyCode = TypingDNA.keyCodes[i];
           var val = obj.arr[keyCode][c];
           if (val == 0 && c > 0) {
             val = 1;
@@ -249,6 +249,7 @@ function TypingDNA(maxHistoryLength) {
           TypingDNA.apu(arr, val);
         }
       }
+      TypingDNA.apu(arr, TypingDNA.isMobile());
       return arr.join(",");
     }
     TypingDNA.apu = function(arr, val) {
@@ -265,7 +266,7 @@ function TypingDNA(maxHistoryLength) {
       for (var i = 0; i < len; i++) {
         sum += arr[i];
       }
-      return this.rd(sum / len, 3);
+      return this.rd(sum / len, 4);
     }
     TypingDNA.math.sd = function(arr) {
       var len = arr.length;
@@ -338,8 +339,8 @@ function TypingDNA(maxHistoryLength) {
           break;
         default:
           var historyStackObj = {};
-          for (var i in TypingDNA.chars) {
-            historyStackObj[TypingDNA.chars[i]] = [
+          for (var i in TypingDNA.keyCodes) {
+            historyStackObj[TypingDNA.keyCodes[i]] = [
               [],
               [],
               []
@@ -351,10 +352,10 @@ function TypingDNA(maxHistoryLength) {
             var seekTime = arr[1];
             var pressTime = arr[2];
             var prevKeyCode = arr[3];
-            if (TypingDNA.chars.indexOf(keyCode) != -1) {
+            if (TypingDNA.keyCodes.indexOf(keyCode) != -1) {
               if (seekTime <= TypingDNA.maxSeekTime) {
                 historyStackObj[keyCode][0].push(seekTime);
-                if (prevKeyCode != 0 && TypingDNA.chars.indexOf(prevKeyCode) != -1) {
+                if (prevKeyCode != 0 && TypingDNA.keyCodes.indexOf(prevKeyCode) != -1) {
                   historyStackObj[prevKeyCode][2].push(seekTime);
                 }
               }
@@ -391,4 +392,21 @@ function TypingDNA(maxHistoryLength) {
     return tReturn > 1 ? 1 : tReturn;
   }
 
+  TypingDNA.getLength = function(typingPattern) {
+    return Number(typingPattern.split(",")[1]);
+  }
+
+  TypingDNA.isMobile = function() {
+    var check = 0;
+    (function(a) {
+      if (
+        /(android|bb\d+|meego).+mobile|avantgo|bada\/|blackberry|blazer|compal|elaine|fennec|hiptop|iemobile|ip(hone|od)|iris|kindle|lge |maemo|midp|mmp|mobile.+firefox|netfront|opera m(ob|in)i|palm( os)?|phone|p(ixi|re)\/|plucker|pocket|psp|series(4|6)0|symbian|treo|up\.(browser|link)|vodafone|wap|windows ce|xda|xiino|android|ipad|playbook|silk/i
+        .test(a) ||
+        /1207|6310|6590|3gso|4thp|50[1-6]i|770s|802s|a wa|abac|ac(er|oo|s\-)|ai(ko|rn)|al(av|ca|co)|amoi|an(ex|ny|yw)|aptu|ar(ch|go)|as(te|us)|attw|au(di|\-m|r |s )|avan|be(ck|ll|nq)|bi(lb|rd)|bl(ac|az)|br(e|v)w|bumb|bw\-(n|u)|c55\/|capi|ccwa|cdm\-|cell|chtm|cldc|cmd\-|co(mp|nd)|craw|da(it|ll|ng)|dbte|dc\-s|devi|dica|dmob|do(c|p)o|ds(12|\-d)|el(49|ai)|em(l2|ul)|er(ic|k0)|esl8|ez([4-7]0|os|wa|ze)|fetc|fly(\-|_)|g1 u|g560|gene|gf\-5|g\-mo|go(\.w|od)|gr(ad|un)|haie|hcit|hd\-(m|p|t)|hei\-|hi(pt|ta)|hp( i|ip)|hs\-c|ht(c(\-| |_|a|g|p|s|t)|tp)|hu(aw|tc)|i\-(20|go|ma)|i230|iac( |\-|\/)|ibro|idea|ig01|ikom|im1k|inno|ipaq|iris|ja(t|v)a|jbro|jemu|jigs|kddi|keji|kgt( |\/)|klon|kpt |kwc\-|kyo(c|k)|le(no|xi)|lg( g|\/(k|l|u)|50|54|\-[a-w])|libw|lynx|m1\-w|m3ga|m50\/|ma(te|ui|xo)|mc(01|21|ca)|m\-cr|me(rc|ri)|mi(o8|oa|ts)|mmef|mo(01|02|bi|de|do|t(\-| |o|v)|zz)|mt(50|p1|v )|mwbp|mywa|n10[0-2]|n20[2-3]|n30(0|2)|n50(0|2|5)|n7(0(0|1)|10)|ne((c|m)\-|on|tf|wf|wg|wt)|nok(6|i)|nzph|o2im|op(ti|wv)|oran|owg1|p800|pan(a|d|t)|pdxg|pg(13|\-([1-8]|c))|phil|pire|pl(ay|uc)|pn\-2|po(ck|rt|se)|prox|psio|pt\-g|qa\-a|qc(07|12|21|32|60|\-[2-7]|i\-)|qtek|r380|r600|raks|rim9|ro(ve|zo)|s55\/|sa(ge|ma|mm|ms|ny|va)|sc(01|h\-|oo|p\-)|sdk\/|se(c(\-|0|1)|47|mc|nd|ri)|sgh\-|shar|sie(\-|m)|sk\-0|sl(45|id)|sm(al|ar|b3|it|t5)|so(ft|ny)|sp(01|h\-|v\-|v )|sy(01|mb)|t2(18|50)|t6(00|10|18)|ta(gt|lk)|tcl\-|tdg\-|tel(i|m)|tim\-|t\-mo|to(pl|sh)|ts(70|m\-|m3|m5)|tx\-9|up(\.b|g1|si)|utst|v400|v750|veri|vi(rg|te)|vk(40|5[0-3]|\-v)|vm40|voda|vulc|vx(52|53|60|61|70|80|81|83|85|98)|w3c(\-| )|webc|whit|wi(g |nc|nw)|wmlb|wonu|x700|yas\-|your|zeto|zte\-/i
+        .test(a.substr(0, 4))) {
+          check = 1
+        }
+    })(navigator.userAgent || navigator.vendor || window.opera);
+    return check;
+  }
 }
