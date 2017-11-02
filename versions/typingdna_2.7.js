@@ -3,7 +3,7 @@
  * https://api.typingdna.com/scripts/typingdna.js
  * https://typingdna.com/scripts/typingdna.js (alternative)
  *
- * @version 2.9
+ * @version 2.7
  * @author Raul Popa
  * @copyright SC TypingDNA SRL, http://typingdna.com
  * @license http://www.apache.org/licenses/LICENSE-2.0
@@ -53,10 +53,7 @@ function TypingDNA() {
     TypingDNA.prototype.removeTarget = function() {
       return TypingDNA.removeTarget.apply(this, arguments);
     }
-    TypingDNA.prototype.getTypingPattern = function() {
-      return TypingDNA.getTypingPattern.apply(this, arguments);
-    }
-    TypingDNA.prototype.get = function() {
+    TypingDNA.prototype.get = function(args) {
       return TypingDNA.get.apply(this, arguments);
     }
     TypingDNA.prototype.startDiagram = function() {
@@ -65,13 +62,13 @@ function TypingDNA() {
     TypingDNA.prototype.stopDiagram = function() {
       return TypingDNA.stopDiagram.apply(this, arguments);
     }
-    TypingDNA.prototype.getDiagram = function() {
+    TypingDNA.prototype.getDiagram = function(args) {
       return TypingDNA.getDiagram.apply(this, arguments);
     }
-    TypingDNA.prototype.getExtendedDiagram = function() {
+    TypingDNA.prototype.getExtendedDiagram = function(args) {
       return TypingDNA.getExtendedDiagram.apply(this, arguments);
     }
-    TypingDNA.prototype.getMouseDiagram = function() {
+    TypingDNA.prototype.getMouseDiagram = function(args) {
       return TypingDNA.getMouseDiagram.apply(this, arguments);
     }
     TypingDNA.prototype.startMouse = function() {
@@ -80,30 +77,27 @@ function TypingDNA() {
     TypingDNA.prototype.stopMouse = function() {
       return TypingDNA.stopMouse.apply(this, arguments);
     }
-    TypingDNA.prototype.getQuality = function() {
+    TypingDNA.prototype.getQuality = function(args) {
       return TypingDNA.getQuality.apply(this, arguments);
     }
-    TypingDNA.prototype.getLength = function() {
+    TypingDNA.prototype.getLength = function(args) {
       return TypingDNA.getLength.apply(this, arguments);
     }
-    TypingDNA.prototype.isMobile = function() {
+    TypingDNA.prototype.isMobile = function(args) {
       return TypingDNA.isMobile.apply(this, arguments);
-    }
-    TypingDNA.prototype.getTextId = function() {
-      return TypingDNA.getTextId.apply(this, arguments)
     }
     TypingDNA.prototype.maxHistoryLength = TypingDNA.maxHistoryLength;
     TypingDNA.prototype.defaultHistoryLength = TypingDNA.defaultHistoryLength;
     TypingDNA.prototype.maxSeekTime = TypingDNA.maxSeekTime;
     TypingDNA.prototype.maxPressTime = TypingDNA.maxPressTime;
-    TypingDNA.version = 2.9;
+    TypingDNA.version = 2.7;
     TypingDNA.flags = 0;
     TypingDNA.instance = this;
     TypingDNA.document = document;
     TypingDNA.maxHistoryLength = 2000;
     TypingDNA.maxSeekTime = 1500;
     TypingDNA.maxPressTime = 300;
-    TypingDNA.defaultHistoryLength = 160;
+    TypingDNA.defaultHistoryLength = 500;
     TypingDNA.spKeyCodes = [8, 13, 32];
     TypingDNA.spKeyCodesObj = {8: 1, 13: 1, 32: 1};
     TypingDNA.keyCodes = [65, 66, 67, 68, 69, 70, 71, 72, 73, 74, 75, 76, 77, 78, 79, 80, 81, 82, 83, 84, 85, 86, 87, 88, 89, 90, 32, 222, 188, 190, 186, 187, 189, 191, 48, 49, 50, 51, 52, 53, 54, 55, 56, 57];
@@ -119,7 +113,7 @@ function TypingDNA() {
     TypingDNA.mouseRecording = true;
     TypingDNA.mouseMoveRecording = false;
     TypingDNA.spKeyRecording = true;
-    TypingDNA.diagramRecording = true;
+    TypingDNA.diagramRecording = false;
     TypingDNA.dwfk = [];
     TypingDNA.dsti = [];
     TypingDNA.dskt = [];
@@ -147,8 +141,6 @@ function TypingDNA() {
     TypingDNA.targetIds = [];
     TypingDNA.lastTarget = "";
     TypingDNA.lastTargetFound = false;
-    TypingDNA.replaceMissingKeys = true;
-    TypingDNA.replaceMissingKeysPerc = 7;
 
     TypingDNA.keyDown = function(e) {
       if (!TypingDNA.recording && !TypingDNA.diagramRecording) {
@@ -623,42 +615,6 @@ function TypingDNA() {
     }
 
     /**
-     * This is the main function that outputs the typing pattern as a String
-     * {type:Number, text:String, textId:Number, length: Number, extended:Boolean}
-     * @param {Object} obj an object with the following properties
-     * * * @param {String} type 0 for standard pattern, 1 for diagram pattern
-     * * * @param {Number} length (Optional) the length of the text in the history for which you want the typing pattern
-     * * * @param {String} text  (Only for type 1) a typed string that you want the typing pattern for
-     * * * @param {Number} textId (Optional, only for type 1) a personalized id for the typed text
-     * * * @param {Boolean} extended (Only for type 1) specifies if full information about what was typed is produced,
-     * * * including the actual key pressed, if false, only the order of pressed keys is kept (no actual content)
-     * @return {String} A typing pattern in string form
-     * @example var typingPattern = tdna.getDiagram();
-     * @example var typingPattern = tdna.getDiagram("Hello5g21?*");
-     */
-    TypingDNA.getTypingPattern = function(obj) {
-      if (typeof obj === 'object') {
-        switch (obj.type) {
-          case 0:
-            return TypingDNA.get(obj.length);
-            break;
-          case 1:
-            if (obj.text != undefined) {
-              return TypingDNA.history.getDiagram(obj.extended, obj.text, obj.textId);
-            } else {
-              return TypingDNA.history.getDiagram(obj.extended, obj.length, obj.textId);
-            }
-            break;
-          default:
-            return TypingDNA.get(obj.length);
-            break;
-        }
-      } else {
-        return TypingDNA.get();
-      }
-    }
-
-    /**
      * This function outputs the linear diagram typing pattern as a String
      * @param  {String} str Optional: The string represented by the diagram
      * The function checks for the exact string (with minor typos) in the recorded
@@ -669,8 +625,8 @@ function TypingDNA() {
      * @example var typingPattern = tdna.getDiagram();
      * @example var typingPattern = tdna.getDiagram("Hello5g21?*");
      */
-    TypingDNA.getDiagram = function(str, textId) {
-      return TypingDNA.history.getDiagram(false, str, textId);
+    TypingDNA.getDiagram = function(str) {
+      return TypingDNA.history.getDiagram(false, str);
     }
 
     /**
@@ -685,11 +641,11 @@ function TypingDNA() {
      * @example var typingPattern = tdna.getExtendedDiagram();
      * @example var typingPattern = tdna.getExtendedDiagram("Hello5g21?*");
      */
-    TypingDNA.getExtendedDiagram = function(str, textId) {
-      return TypingDNA.history.getDiagram(true, str, textId);
+    TypingDNA.getExtendedDiagram = function(str) {
+      return TypingDNA.history.getDiagram(true, str);
     }
 
-    TypingDNA.getMouseDiagram = function() {
+    TypingDNA.getMouseDiagram = function(str) {
       return TypingDNA.mouse.history.getDiagram();
     }
 
@@ -729,9 +685,6 @@ function TypingDNA() {
       var pressSDToPressRatio = TypingDNA.math.rd((pressHistSD + zl) / (pressHistMean + zl), 4);
       var seekSDToPressRatio = TypingDNA.math.rd((seekHistSD + zl) / (pressHistMean + zl), 4);
       var cpm = Math.round(6E4 / (charMeanTime + zl));
-      if (histRev == 0) {
-        cpm = 0;
-      }
       for (var i in obj.arr) {
         var rev = obj.arr[i][1].length;
         var seekMean = 0;
@@ -880,21 +833,6 @@ function TypingDNA() {
       }
     }
 
-    // Calculate a 32 bit FNV-1a hash
-    TypingDNA.math.fnv1aHash = function(str) {
-        if (str == undefined && typeof str !== 'string') {
-          return 0;
-        }
-        str = str.toLowerCase();
-        var i, l;
-        var hval = 0x721b5ad4;
-        for (i = 0, l = str.length; i < l; i++) {
-            hval ^= str.charCodeAt(i);
-            hval += (hval << 1) + (hval << 4) + (hval << 7) + (hval << 8) + (hval << 24);
-        }
-        return hval >>> 0;
-    }
-
     TypingDNA.history = {};
     TypingDNA.history.stack = [];
     TypingDNA.history.stackDiagram = [];
@@ -910,127 +848,47 @@ function TypingDNA() {
       this.stackDiagram.push(arr);
     }
 
-    TypingDNA.history.getDiagram = function(extended, str, textId) {
+    TypingDNA.history.getDiagram = function(extended, str) {
       var returnArr = [];
-      var diagramType = (extended == true) ? 1 : 0;
+      var diagramType = (extended) ? 1 : 0;
+      returnArr.push([TypingDNA.isMobile(), TypingDNA.version, TypingDNA.flags, TypingDNA.history.getSpecialKeys(), diagramType]);
       var diagramHistoryLength = this.stackDiagram.length;
       var targetLength = TypingDNA.targetIds.length;
-      var missingCount = 0;
-      if (str == undefined){
-        if(targetLength > 0) {
-          str = "";
-          for (var i = 0; i < targetLength; i++) {
-            var element = TypingDNA.document.getElementById(TypingDNA.targetIds[i]);
-            if (element != null) {
-              str += element.value;
-            }
-          }
-        } else {
-          if (!extended) {
-            console.log("Please use extended diagram OR provide a fixed string param OR use the addTarget method.");
+      if (str == undefined && targetLength > 0) {
+        str = "";
+        for (var i = 0; i < targetLength; i++) {
+          var element = TypingDNA.document.getElementById(TypingDNA.targetIds[i]);
+          if (element != null) {
+            str += element.value;
           }
         }
       }
-      var strLength = diagramHistoryLength;
-      if (typeof str === 'string') {
-          strLength = str.length;
-      } else if (typeof str === 'number' && str < diagramHistoryLength) {
-          strLength = str;
-      }
-
-      var returnTextId = 0;
-      if (textId != undefined) {
-        if (isNaN(parseInt(textId))) {
-          returnTextId = TypingDNA.math.fnv1aHash(textId);
-        } else {
-          returnTextId = parseInt(textId);
-        }
-      } else {
-        if (typeof str === 'string') {
-          returnTextId = TypingDNA.math.fnv1aHash(str);
-        }
-      }
-
-      returnArr.push([TypingDNA.isMobile(), TypingDNA.version, TypingDNA.flags, diagramType, strLength, returnTextId, TypingDNA.history.getSpecialKeys()]);
-      if (str != undefined && str.length > 0 && typeof str === 'string') {
-        var lastFoundPos = [];
+      if (str != undefined) {
+        var solvedAstr = [];
         var lastPos = 0;
         for (var i = 0; i < str.length; i++) {
           var currentCharCode = str.charCodeAt(i);
-          var startPos = lastPos;
-          var finishPos = diagramHistoryLength;
-          var found = false
-          while (found == false){
-            for (var j = startPos; j < finishPos; j++) {
-              var arr = this.stackDiagram[j];
-              var charCode = arr[3];
-              if (charCode == currentCharCode) {
-                found = true;
-                if (j == lastPos) {
-                  lastPos++;
-                  lastFoundPos = [];
-                } else {
-                  lastFoundPos.push(j);
-                  var len = lastFoundPos.length;
-                  if (len > 1 && lastFoundPos[len-1] == lastFoundPos[len-2] + 1) {
-                    lastPos = j+1;
-                    lastFoundPos = [];
-                  }
-                }
-                var keyCode = arr[0];
-                var seekTime = arr[1];
-                var pressTime = arr[2];
-                if (extended) {
-                  returnArr.push([charCode, seekTime, pressTime, keyCode]);
-                } else {
-                  returnArr.push([seekTime, pressTime]);
-                }
-                break;
+          for (var j = lastPos; j < diagramHistoryLength; j++) {
+            var arr = this.stackDiagram[j];
+            var charCode = arr[3];
+            if (charCode == currentCharCode) {
+              if (j == lastPos) {
+                lastPos++;
               }
-            }
-            if (found == false) {
-              if (startPos != 0) {
-                startPos = 0;
-                finishPos = lastPos;
+              var keyCode = arr[0];
+              var seekTime = arr[1];
+              var pressTime = arr[2];
+              if (extended) {
+                returnArr.push([charCode, seekTime, pressTime, keyCode]);
               } else {
-                found = true;
-                if (TypingDNA.replaceMissingKeys) {
-                  missingCount++;
-                  if (typeof TypingDNA.savedMissingAvgValues !== 'object' || TypingDNA.savedMissingAvgValues.historyLength != diagramHistoryLength) {
-                    var histSktF = TypingDNA.math.fo(TypingDNA.history.get(0, "seek"));
-                    var histPrtF = TypingDNA.math.fo(TypingDNA.history.get(0, "press"));
-                    var seekTime = Math.round(TypingDNA.math.avg(histSktF));
-                    var pressTime = Math.round(TypingDNA.math.avg(histPrtF));
-                    TypingDNA.savedMissingAvgValues = {seekTime:seekTime, pressTime:pressTime, historyLength:diagramHistoryLength};
-                  } else {
-                    var seekTime = TypingDNA.savedMissingAvgValues.seekTime;
-                    var pressTime = TypingDNA.savedMissingAvgValues.pressTime;
-                  }
-                  var missing = 1;
-                  if (extended) {
-                    returnArr.push([currentCharCode, seekTime, pressTime, currentCharCode, missing]);
-                  } else {
-                    returnArr.push([seekTime, pressTime, missing]);
-                  }
-                  break;
-                }
+                returnArr.push([seekTime, pressTime]);
               }
+              break;
             }
-          }
-          if (TypingDNA.replaceMissingKeysPerc < missingCount*100/strLength) {
-            returnArr = [returnArr[0]];
-            break;
           }
         }
       } else {
-        var startCount = 0;
-        if (typeof str === 'number') {
-          startCount = diagramHistoryLength - str;
-        }
-        if (startCount < 0) {
-          startCount = 0;
-        }
-        for (var i = startCount; i < diagramHistoryLength; i++) {
+        for (var i = 0; i < diagramHistoryLength; i++) {
           var arr = this.stackDiagram[i];
           var keyCode = arr[0];
           var seekTime = arr[1];
@@ -1229,9 +1087,5 @@ function TypingDNA() {
       TypingDNA.mobile = check;
       return check;
     }
-  }
-
-  TypingDNA.getTextId = function(str) {
-    return TypingDNA.math.fnv1aHash(str);
   }
 }
