@@ -4,7 +4,9 @@ Full documentation at [api.typingdna.com](https://api.typingdna.com)*
 
 ### Usage and description
 First create an instance of the TypingDNA class. Once it's done, the user typing starts being recorded (as a history of strokes). Whenever you want to get the user's typing pattern you have to invoke .getTypingPattern method described in detail below.
+
 **Returns**: Returns the instance of the TypingDNA class (singleton)
+
 **Example**  
 ```js
 var tdna = new TypingDNA();
@@ -25,6 +27,7 @@ Here are the functions available in the TypingDNA class:
 This is the main function that outputs the user's typing pattern as a String
 
 **Returns**: A typing pattern in String form  
+
 **optionsObject**: An object of the following form {type:Number, text:String, textId:Number, length: Number, extended:Boolean}. Detail table below.
 
 | Param | Type | Description | 
