@@ -23,10 +23,10 @@ Here are the functions available in the TypingDNA class:
 * .getQuality(typingPattern) ⇒ `Number` 
 
 
-### TypingDNA.getTypingPattern(optionsObject) ⇒ `String`
+### TypingDNA.getTypingPattern(optionsObject)
 This is the main function that outputs the user's typing pattern as a String
 
-**Returns**: A typing pattern in String form  
+**Returns**: A typing pattern in `String` form  
 
 **optionsObject**: An object of the following form {type:Number, text:String, textId:Number, length: Number, extended:Boolean}. Detail table below.
 
@@ -68,7 +68,7 @@ Automatically called at initilization. It starts the recording of typing events.
 ### TypingDNA.stop()
 Ends the recording of further typing events. 
 
-### TypingDNA.getQuality(typingPattern) ⇒ `Number`
+### TypingDNA.getQuality(typingPattern)
 Checks the quality of a general typing pattern (type 0), how well it is revelated, how useful the
 information will be for matching applications. 
 
