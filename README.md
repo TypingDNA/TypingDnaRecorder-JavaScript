@@ -24,7 +24,7 @@ Here are the functions available in the TypingDNA class:
 
 
 ### TypingDNA.getTypingPattern(optionsObject)
-This is the main function that outputs the user's typing pattern as a String
+This is the main function that outputs the user's typing pattern as a `String`
 
 **Returns**: A typing pattern in `String` form  
 

@@ -3,7 +3,7 @@
  * https://api.typingdna.com/scripts/typingdna.js
  * https://typingdna.com/scripts/typingdna.js (alternative)
  *
- * @version 2.10
+ * @version 2.11
  * @author Raul Popa
  * @copyright SC TypingDNA SRL, http://typingdna.com
  * @license http://www.apache.org/licenses/LICENSE-2.0
@@ -97,7 +97,7 @@ function TypingDNA() {
     TypingDNA.prototype.defaultHistoryLength = TypingDNA.defaultHistoryLength;
     TypingDNA.prototype.maxSeekTime = TypingDNA.maxSeekTime;
     TypingDNA.prototype.maxPressTime = TypingDNA.maxPressTime;
-    TypingDNA.version = 2.10;
+    TypingDNA.version = 2.11;
     TypingDNA.flags = 0;
     TypingDNA.instance = this;
     TypingDNA.document = document;
@@ -648,33 +648,10 @@ function TypingDNA() {
       }
     }
 
-    /**
-     * This function outputs the linear diagram typing pattern as a String
-     * @param  {String} str Optional: The string represented by the diagram
-     * The function checks for the exact string (with minor typos) in the recorded
-     * history. Any letters that are not included in the string will be ommited from
-     * the output diagram typing pattern.
-     * @return {String} The TypingDNA linear diagram typing pattern, comma separated.
-     * A non-fixed vector of only numeric values separated by commas.
-     * @example var typingPattern = tdna.getDiagram();
-     * @example var typingPattern = tdna.getDiagram("Hello5g21?*");
-     */
     TypingDNA.getDiagram = function(str, textId) {
       return TypingDNA.history.getDiagram(false, str, textId);
     }
 
-    /**
-     * This function outputs the extended linear diagram typing pattern as a String
-     * Compared to getDiagram, it includes char codes (not safe for storage)
-     * @param  {String} str Optional: The string represented by the diagram
-     * The function checks for the exact string (with minor typos) in the recorded
-     * history. Any letters that are not included in the string will be ommited from
-     * the output diagram typing pattern.
-     * @return {String} The TypingDNA linear diagram typing pattern, comma separated.
-     * A non-fixed vector of only numeric values separated by commas.
-     * @example var typingPattern = tdna.getExtendedDiagram();
-     * @example var typingPattern = tdna.getExtendedDiagram("Hello5g21?*");
-     */
     TypingDNA.getExtendedDiagram = function(str, textId) {
       return TypingDNA.history.getDiagram(true, str, textId);
     }
@@ -683,18 +660,6 @@ function TypingDNA() {
       return TypingDNA.mouse.history.getDiagram();
     }
 
-    /**
-     * This function outputs the typing pattern as a String, in a new basic structure for
-     * easy storage and usage in any kind of keystroke dynamics applications (e.g. typing
-     * pattern matching, user recognition)
-     * @param  {Number} length Optional: The amount of history keystrokes to use for the
-     * typing pattern. By default it will use the last 500 recorded keystrokes (or as many
-     * available if less than 500).
-     * @return {String}        The TypingDNA typing pattern, comma separated.
-     * A fixed vector of only numeric values separated by commas.
-     * @example var typingPattern = tdna.get();
-     * @example var typingPattern = tdna.get(200);
-     */
     TypingDNA.get = function(length) {
       var historyTotalLength = TypingDNA.history.stack.length;
       if (length == undefined) {
