@@ -1,9 +1,17 @@
 # TypingDNA JavaScript recorder 
-##### A simple way to record typing patterns
+##### A simple way to capture user’s typing patterns
 Full documentation at [api.typingdna.com](https://api.typingdna.com)*
 
 ### Usage and description
-First create an instance of the TypingDNA class. Once it's done, the user typing starts being recorded (as a history of strokes). Whenever you want to get the user's typing pattern you have to invoke .getTypingPattern method described in detail below.
+First you need to import the [typingdna.js](https://typingdna.com/scripts/typingdna.js) file in the page that wants to record a typing pattern. You will need to record typing patterns when a user first creates his account and again whenever you want to authenticate that user on your platform. You can host the .js file yourself. 
+
+Alternative locations from where you can include the last class: 
+* https://typingdna.com/scripts/typingdna.js
+* https://api.typingdna.com/scripts/typingdna.js
+
+### TypingDNA class
+
+Once you create an instance of the TypingDNA class, the user typing starts being recorded (as a history of strokes). Whenever you want to get the user's typing pattern you have to invoke .getTypingPattern method described in detail below.
 
 **Returns**: Returns the instance of the TypingDNA class (singleton)
 
@@ -28,7 +36,7 @@ This is the main function that outputs the user's typing pattern as a `String`
 
 **Returns**: A typing pattern in `String` form  
 
-**optionsObject**: An object of the following form {type:Number, text:String, textId:Number, length: Number, extended:Boolean}. Detail table below.
+**optionsObject**: An object of the following form {type:Number, text:String, textId:Number, length: Number, extended:Boolean, targetId:String}. Detail table below.
 
 | Param | Type | Description | 
 | --- | --- | --- |
@@ -37,6 +45,7 @@ This is the main function that outputs the user's typing pattern as a `String`
 | **textId** | `Number` | (Optional, only for type 1) a personalized id for the typed text | 
 | **length** | `Number` | (Optional) the length of the text in the history for which you want the typing pattern, for type 0 is usually 140 or more |
 | **extended** | `Boolean` | (Only for type 1) specifies if full information about what was typed is produced, including the actual key pressed, if false, only the order of pressed keys is kept (no actual content) |
+| **targetId** | `String` | (Optional) specifies if pattern is obtain only from text typed in a certain target |
 
 **Examples**  
 ```js
@@ -48,7 +57,7 @@ var generalPattern = tdna.getTypingPattern({type=0, length=160});
 ### TypingDNA.addTarget(element_id)
 (Optional) Adds a target to the targetIds array. It has to be a text input or text area or any other HTML DOM element that has the .value property. You can add multiple targets (such as username and password fields). 
 
-If you omit adding targets the typing patterns will be outputed for the entire typing session.
+If you omit adding targets the typing patterns will be recorded for the entire typing session.
 
 **Example**  
 ```js
