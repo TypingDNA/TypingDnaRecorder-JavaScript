@@ -57,18 +57,23 @@ function TypingDNA() {
       return TypingDNA.getTypingPattern.apply(this, arguments);
     }
     TypingDNA.prototype.get = function() {
+      // still works but will be deprecated in favor of getTypignPattern()
       return TypingDNA.get.apply(this, arguments);
     }
     TypingDNA.prototype.startDiagram = function() {
-      return TypingDNA.startDiagram.apply(this, arguments);
+      // deprecated in favor of start()
+      //return TypingDNA.startDiagram.apply(this, arguments);
     }
     TypingDNA.prototype.stopDiagram = function() {
-      return TypingDNA.stopDiagram.apply(this, arguments);
+      // deprecated in favor of stop()
+      //return TypingDNA.stopDiagram.apply(this, arguments);
     }
     TypingDNA.prototype.getDiagram = function() {
+      // still works but will be deprecated in favor of getTypignPattern()
       return TypingDNA.getDiagram.apply(this, arguments);
     }
     TypingDNA.prototype.getExtendedDiagram = function() {
+      // still works but will be deprecated in favor of getTypignPattern()
       return TypingDNA.getExtendedDiagram.apply(this, arguments);
     }
     TypingDNA.prototype.getMouseDiagram = function() {
