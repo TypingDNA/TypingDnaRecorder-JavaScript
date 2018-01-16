@@ -36,7 +36,7 @@ This is the main function that outputs the user's typing pattern as a `String`
 
 **Returns**: A typing pattern in `String` form  
 
-**optionsObject**: An object of the following form {type:Number, text:String, textId:Number, length: Number, extended:Boolean, targetId:String}. Detail table below.
+**optionsObject**: An object of the following form {type:Number, text:String, textId:Number, length: Number, extended:Boolean, targetId:String, caseSensitive:Boolean}. Detail table below.
 
 | Param | Type | Description |
 | --- | --- | --- |
