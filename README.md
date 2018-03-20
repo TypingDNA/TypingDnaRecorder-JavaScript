@@ -36,23 +36,25 @@ This is the main function that outputs the user's typing pattern as a `String`
 
 **Returns**: A typing pattern in `String` form  
 
-**optionsObject**: An object of the following form {type:Number, text:String, textId:Number, length: Number, extended:Boolean, targetId:String, caseSensitive:Boolean}. Detail table below.
+**optionsObject**: An object of the following form {type:Number, text:String, textId:Number, length: Number, targetId:String, caseSensitive:Boolean}. Detail table below.
 
 | Param | Type | Description |
 | --- | --- | --- |
-| **type** | `Number` | `0 for anytext pattern` (when you compare random typed texts of usually 120-180 chars long) <br> `1 for diagram pattern` (recommended in most cases, for emails, passwords, phone numbers, credit cards, short texts) |
-| **text** | `String` | (Only for type 1) a typed string that you want the typing pattern for |
-| **textId** | `Number` | (Optional, only for type 1) a personalized id for the typed text |
+| **type** | `Number` | `0 for anytext pattern` (when you compare random typed texts of usually 120-180 chars long) <br> `1 for sametext pattern` (also called diagram pattern, recommended in most cases, for emails, passwords, phone numbers, credit cards, short texts)<br> ` 2 for extended pattern` (most versatile, can replace both anytext and sametext patterns) |
+| **text** | `String` | (Only for type 1 and type 2) a typed string that you want the typing pattern for |
+| **textId** | `Number` | (Optional, only for type 1 and type 2) a personalized id for the typed text |
 | **length** | `Number` | (Optional) the length of the text in the history for which you want the typing pattern, for type 0 is usually 140 or more |
-| **extended** | `Boolean` | (Only for type 1) specifies if full information about what was typed is produced, including the actual key pressed, if false, only the order of pressed keys is kept (no actual content) |
 | **targetId** | `String` | (Optional) specifies if pattern is obtain only from text typed in a certain target |
-| **caseSensitive** | `Boolean` | (Optional, default: false, Only for type 1) Used if you pass a text for type 1 |
+| **caseSensitive** | `Boolean` | (Optional, default: false) Used if you pass a text for type 1 or type 2|
 
 **Examples**  
 ```js
-var diagramPattern = tdna.getTypingPattern({type=1, text="Hello5g21?*", extedend=false});
-var extendedDiagramPattern = tdna.getTypingPattern({type=1, length=160, extended=true});
-var generalPattern = tdna.getTypingPattern({type=0, length=160});
+//anytext pattern
+var typingPattern = tdna.getTypingPattern({type=0, length=160});
+//sametext pattern
+var typingPattern = tdna.getTypingPattern({type=1, text="Hello5g21?*"});
+//extended pattern
+var typingPattern = tdna.getTypingPattern({type=2, text="example@mail.com"});
 ```
 
 ### TypingDNA.addTarget(element_id)
