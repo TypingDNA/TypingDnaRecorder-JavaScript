@@ -1628,14 +1628,12 @@ function TypingDNA() {
       } else if (!os && /Windows/.test(ua)) {
         os = 1;
       }
-      if (mobile !== 3 || mobile === 2 || TypingDNA.isMobile() === 1) {
+      if ((mobile !== 3 || mobile === 2) && TypingDNA.isMobile() === 1) {
         if (/(ipad|tablet|(android(?!.*mobile))|(windows(?!.*phone)(.*touch))|kindle|playbook|silk|(puffin(?!.*(IP|AP|WP))))/i.test(ua)) {
           mobile = 3;
-        } else if (os === 6 || os === 0) {
-          if ((orientation && screen.height > 767 && screen.width > 480) ||
-              (!orientation && screen.width > 767 && screen.height > 480)) {
-            mobile = 3;
-          }
+        } else if ((os === 6 || os === 0) && ((orientation && screen.height > 767 && screen.width > 480) ||
+            (!orientation && screen.width > 767 && screen.height > 480))) {
+          mobile = 3;
         } else if (os === 1) {
           if (window.navigator.msPointerEnabled && navigator.msMaxTouchPoints > 0) {
             mobile = 3;
@@ -1666,7 +1664,7 @@ function TypingDNA() {
       var browserType = osBrowserMobile[2]; // {0:unknown, 1:Chrome, 2:Firefox, 3:Opera, 4:IE, 5: Safari, 6: Edge, 7:AndroidWK}
       var displayWidth = screen.width || 0; // screen width in pixels
       var displayHeight = screen.height || 0; // screen height in pixels
-      var orientation = osBrowserMobile[6] + 1; // {0:unknown, 1:portrait, 2:landscape}
+      var orientation = osBrowserMobile[6] ? 1 : 2;// {0:unknown, 1:portrait, 2:landscape}
       var osVersion = osBrowserMobile[1]; // numbers only
       var browserVersion = osBrowserMobile[3]; // numbers only
       var cookieId = TypingDNA.cookieId; // default 0
