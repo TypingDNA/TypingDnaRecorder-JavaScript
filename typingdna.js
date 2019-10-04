@@ -986,6 +986,7 @@ function TypingDNA() {
         length = historyTotalLength;
       }
       var obj = {};
+      var targetLength;
       [obj.arr, targetLength] = TypingDNA.history.get(length, "", targetId);
       if (targetId !== undefined && targetId !== "") {
         length = targetLength;
@@ -1774,3 +1775,5 @@ function TypingDNA() {
     return TypingDNA.instance;
   }
 }
+
+export default { TypingDNA }
