@@ -50,11 +50,11 @@ This is the main function that outputs the user's typing pattern as a `String`
 **Examples**  
 ```js
 //anytext pattern
-var typingPattern = tdna.getTypingPattern({type=0, length=160});
+var typingPattern = tdna.getTypingPattern({type:0, length:160});
 //sametext pattern
-var typingPattern = tdna.getTypingPattern({type=1, text="Hello5g21?*"});
+var typingPattern = tdna.getTypingPattern({type:1, text:"Hello5g21?*"});
 //extended pattern
-var typingPattern = tdna.getTypingPattern({type=2, text="example@mail.com"});
+var typingPattern = tdna.getTypingPattern({type:2, text:"example@mail.com"});
 ```
 
 ### TypingDNA.addTarget(element_id)
