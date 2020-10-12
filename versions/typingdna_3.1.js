@@ -82,6 +82,9 @@ function TypingDNA() {
     TypingDNA.prototype.getTextId = function() {
       return TypingDNA.getTextId.apply(this, arguments)
     }
+    TypingDNA.prototype.checkEnvironment = function() {
+      return TypingDNA.checkEnvironment.apply(this, arguments);
+    }
 
     // DEPRECATED FUNCTIONS //
     TypingDNA.prototype.get = function() {
@@ -173,6 +176,59 @@ function TypingDNA() {
     TypingDNA.replaceMissingKeysPerc = 7;
     TypingDNA.pressCalculated = false;
     TypingDNA.pressRecorded = false;
+
+    TypingDNA.checkEnvironment = function () {
+      var env = {
+        browserType: '',
+        isMobile: this.isMobile() === 1,
+        hasMotionSensors: false,
+        needsPermissionForMotionSensors: false,
+      };
+
+      // Blink
+      if ((!!window.chrome && (!!window.chrome.webstore || !!window.chrome.runtime || !!window.chrome.loadTimes)
+          || (!!window.opr && !!opr.addons) || !!window.opera || navigator.userAgent.indexOf(' OPR/') >= 0)
+          && !!window.CSS) {
+        env.browserType = 'blink';
+      }
+      // Opera
+      else if ((!!window.opr && !!window.opr.addons) || !!window.opera || navigator.userAgent.indexOf(' OPR/') >= 0) {
+        env.browserType = 'opera';
+      }
+      // Firefox
+      else if (typeof InstallTrigger !== 'undefined') {
+        env.browserType = 'firefox';
+      }
+      // Internet Explorer
+      else if (/*@cc_on!@*/false || !!document.documentMode) {
+        env.browserType = 'internet explorer';
+      }
+      // Edge
+      else if (!(/*@cc_on!@*/false || !!document.documentMode) && !!window.StyleMedia) {
+        env.browserType = 'edge';
+      }
+      // Edge Chromium
+      else if (!!window.chrome && (!!window.chrome.webstore || !!window.chrome.runtime || !!window.chrome.loadTimes) && (navigator.userAgent.indexOf("Edg") != -1)) {
+        env.browserType = 'edge chromium';
+      }
+      // Chrome
+      else if (!!window.chrome && (!!window.chrome.webstore || !!window.chrome.runtime || !!window.chrome.loadTimes)) {
+        env.browserType = 'chrome';
+      }
+      // Safari
+      else if (/constructor/i.test(window.HTMLElement)
+          || (function (p) { return p.toString() === "[object SafariRemoteNotification]"; })(!window['safari'] || (typeof safari !== 'undefined' && safari.pushNotification))
+          || (navigator.userAgent.indexOf("Safari") > -1 && navigator.userAgent.indexOf('Chrome') === -1)) {
+        env.browserType = 'safari';
+      }
+
+      if (env.isMobile) {
+        env.hasMotionSensors = window.DeviceMotionEvent !== undefined;
+        env.needsPermissionForMotionSensors = window.DeviceMotionEvent !== undefined && typeof window.DeviceMotionEvent.requestPermission === 'function';
+      }
+
+      return env;
+    };
 
     TypingDNA.keyDown = function(e) {
       if (!TypingDNA.recording && !TypingDNA.diagramRecording) {
@@ -986,8 +1042,9 @@ function TypingDNA() {
         length = historyTotalLength;
       }
       var obj = {};
-      var targetLength;
-      [obj.arr, targetLength] = TypingDNA.history.get(length, "", targetId);
+      var historyData = TypingDNA.history.get(length, "", targetId);
+      obj['arr'] = historyData[0];
+      var targetLength = historyData[1];
       if (targetId !== undefined && targetId !== "") {
         length = targetLength;
       }
