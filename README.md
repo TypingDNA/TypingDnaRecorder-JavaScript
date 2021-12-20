@@ -75,7 +75,7 @@ Remove a target from the targetIds array.
 Resets the history stack of recorded typing events.
 
 ### TypingDNA.start()
-Automatically called at initilization. It starts the recording of typing events. You only have to call .start() to resume recording after a .stop()
+Automatically called at initialization. It starts the recording of typing events. You only have to call .start() to resume recording after a .stop()
 
 ### TypingDNA.stop()
 Ends the recording of further typing events.
