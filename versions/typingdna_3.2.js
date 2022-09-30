@@ -122,7 +122,7 @@ function TypingDNA() {
     TypingDNA.instance = this;
     TypingDNA.document = document;
     TypingDNA.ua = window.navigator.userAgent,
-    TypingDNA.platform = window.navigator.platform;
+        TypingDNA.platform = window.navigator.platform;
     TypingDNA.maxHistoryLength = 2000;
     TypingDNA.maxSeekTime = 1500;
     TypingDNA.maxPressTime = 300;
